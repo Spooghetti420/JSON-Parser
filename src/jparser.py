@@ -42,7 +42,7 @@ def parse_list(tokens: list[Token]):
             t = tokens[i]
             if state is ParserState.EXPECT_VALUE:
                 if is_literal(t):
-                    print(f"Added value {t.literal}")
+                    # print(f"Added value {t.literal}")
                     output.append(t.literal)
                     try:
                         if tokens[i+1].ttype is not TokenTypes.COMMA:
@@ -65,7 +65,7 @@ def parse_list(tokens: list[Token]):
                         i += 1
                     
                     section = parse_list(tokens[start:i-1])
-                    print(f"Added sublist {section}")
+                    # print(f"Added sublist {section}")
                     output.append(section)
 
                 elif t.ttype is TokenTypes.LEFT_CURLY_BRACKET:
@@ -82,7 +82,7 @@ def parse_list(tokens: list[Token]):
                         i += 1
                     
                     section = parse(tokens[start-1:i])
-                    print(f"Added subobject {section}")
+                    # print(f"Added subobject {section}")
                     output.append(section)
 
             i += 1
@@ -93,7 +93,7 @@ def parse(tokens: list[Token]):
     # if len(tokens) == 0:
     #     return {}
     
-    print(tokens)
+    # print(tokens)
     current: int = -1
     output = {}
     state = ParserState.EXPECT_KEY
@@ -101,7 +101,7 @@ def parse(tokens: list[Token]):
     def at_end():
         return current >= len(tokens)
 
-    print(current, id(current))
+    # print(current, id(current))
 
     bracket_types = {
         "[]": [TokenTypes.LEFT_SQUARE_BRACKET, TokenTypes.RIGHT_SQUARE_BRACKET],
@@ -131,7 +131,7 @@ def parse(tokens: list[Token]):
         nonlocal current
         current += 1
         if tokens[current].ttype not in expected_types:
-            print(tokens[current].ttype, expected_types, current, id(current))
+            # print(tokens[current].ttype, expected_types, current, id(current))
             raise JSONExpectationError(f"Expected {expected_types} at {tokens[current-1].start}.")
         return tokens[current]
 
@@ -141,19 +141,19 @@ def parse(tokens: list[Token]):
 
         if state is ParserState.EXPECT_KEY:
             key = expect(TokenTypes.STRING)
-            print(f"Found key {key}...")
+            # print(f"Found key {key}...")
             expect(TokenTypes.COLON) # Expend a colon token if it exists
-            print("Found colon...")
+            # print("Found colon...")
             try:
                 value = expect(TokenTypes.STRING, TokenTypes.NUMBER, TokenTypes.NULL, TokenTypes.TRUE, TokenTypes.FALSE)
-                print(f"Found value {value}...")
+                # print(f"Found value {value}...")
                 output[key.literal] = value.literal
             except JSONExpectationError as e:
                 t = tokens[current]
                 if t.ttype is TokenTypes.LEFT_CURLY_BRACKET:
                     start = current
                     current = count_brackets("{}") # Find the end of this object
-                    print("PARSING SUBOBJECT")
+                    # print("PARSING SUBOBJECT")
                     output[key.literal] = parse(tokens[start:current])
                     current -= 1
                 elif t.ttype is TokenTypes.LEFT_SQUARE_BRACKET:
@@ -161,7 +161,7 @@ def parse(tokens: list[Token]):
                     current = count_brackets("[]")
                     current -= 1
                     output[key.literal] = parse_list(tokens[start+1:current])
-                    print(f"Skipped square brackets from {start} to {current}")
+                    # print(f"Skipped square brackets from {start} to {current}")
                 else:
                     raise e
 

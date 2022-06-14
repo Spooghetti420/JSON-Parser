@@ -8,7 +8,7 @@ def indent_by(text: str, amount: int):
 
 def dump(json: Union[dict, list], indent=0) -> str:
     output = ""
-    print(f"Indent level is {indent}")
+    # print(f"Indent level is {indent}")
     if isinstance(json, dict):
         output += indent_by("{" + ",\n".join(f'"{key}": {dump(value, indent+4)}' for key, value in json.items()) + "}", 0)
     elif isinstance(json, list):

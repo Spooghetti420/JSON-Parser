@@ -76,7 +76,7 @@ def tokenise(json_str: str):
                         content += bytes(next_four, "ascii").decode("unicode-escape")
 
                 except IndexError:
-                    print(f"String abruptly terminated at {line} col {start}")
+                    # print(f"String abruptly terminated at {line} col {start}")
                     raise SystemExit(1)
 
             elif t == '"':
