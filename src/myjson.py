@@ -1,8 +1,6 @@
-from jparser import parse
-from tokeniser import tokenise
-from dumper import dump
-import pprint
-
+from jparser import __parse
+from tokeniser import __tokenise
+from dumper import __dump
 
 """
 This module serves as a frontend for "users" of the API.
@@ -13,16 +11,16 @@ If you wish to use this library rather than the standard
 
 def loads(json_str: str) -> dict:
     """Generates a dictionary from a JSON string."""
-    return parse(tokenise(json_str))
+    return __parse(__tokenise(json_str))
 
 def dumps(json_dict: dict) -> str:
     """Generates a string dump of a JSON dictionary."""
-    return dump(json_dict)
+    return __dump(json_dict)
 
 def loadf(file_path: str) -> dict:
     """Generates a dictionary from a file on the filesystem."""
     with open(file_path, encoding="utf-8") as json_file:
-        return parse(tokenise(json_file.read()))
+        return __parse(__tokenise(json_file.read()))
 
 def dumpf(json_dict: dict, file_path: str) -> None:
     """Dumps the contents of a dictionary with JSON data into a file."""

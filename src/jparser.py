@@ -1,6 +1,6 @@
 from enum import Enum, auto
 from typing import Literal
-from tokeniser import tokenise
+from tokeniser import __tokenise
 from tokens import Token, TokenTypes
 
 """WARNING: Code may not function perfectly.
@@ -79,14 +79,14 @@ def parse_list(tokens: list[Token]):
                             count -= 1
                         i += 1
                     
-                    section = parse(tokens[start-1:i])
+                    section = __parse(tokens[start-1:i])
                     output.append(section)
 
             i += 1
 
         return output  
 
-def parse(tokens: list[Token]):
+def __parse(tokens: list[Token]):
     current: int = -1
     output = {}
     state = ParserState.EXPECT_KEY
@@ -140,7 +140,7 @@ def parse(tokens: list[Token]):
                 if t.ttype is TokenTypes.LEFT_CURLY_BRACKET:
                     start = current
                     current = count_brackets("{}") # Find the end of this object
-                    output[key.literal] = parse(tokens[start:current])
+                    output[key.literal] = __parse(tokens[start:current])
                     current -= 1
                 elif t.ttype is TokenTypes.LEFT_SQUARE_BRACKET:
                     start = current
@@ -159,8 +159,8 @@ def parse(tokens: list[Token]):
 
 def main():
     with open("file.json", mode="r", encoding="utf-8") as jsonf:
-        tokens = tokenise(jsonf.read())
-        print(parse(tokens))
+        tokens = __tokenise(jsonf.read())
+        print(__parse(tokens))
 
 
 if __name__ == "__main__":

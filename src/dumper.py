@@ -5,14 +5,14 @@ def indent_by(text: str, amount: int):
     return (" " * amount) + text
 
 
-def dump(json: Union[dict, list], indent=0) -> str:
+def __dump(json: Union[dict, list], indent=0) -> str:
     output = ""
     if isinstance(json, dict):
         output += "{\n"  # Opening bracket
-        output += ",\n".join(indent_by(f'"{key}": {dump(value, indent+4)}', indent+4) for key, value in json.items())  # Keys and values
+        output += ",\n".join(indent_by(f'"{key}": {__dump(value, indent+4)}', indent+4) for key, value in json.items())  # Keys and values
         output += "\n" + " " * indent + "}"  # Closing bracket
     elif isinstance(json, list):
-        output += "[" + ", ".join(dump(value, indent) for value in json) + "]"
+        output += "[" + ", ".join(__dump(value, indent) for value in json) + "]"
     elif isinstance(json, (int, float)):
         output += str(json)
     elif isinstance(json, str):
@@ -32,7 +32,7 @@ def main():
         content = f.read()
         json = parse(tokenise(content))
     
-    output: str = dump(json)
+    output: str = __dump(json)
     with open("file_out.json", mode="w") as out_file:
         out_file.write(output)
 

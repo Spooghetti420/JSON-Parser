@@ -6,7 +6,7 @@ from tokens import Token, TokenTypes
 class JSONTokenError(ValueError):
     pass
 
-def tokenise(json_str: str):
+def __tokenise(json_str: str):
     current: int = 0
     start: int = 0
     line: int = 0

@@ -2,7 +2,6 @@ import unittest
 import os.path
 import json
 import myjson
-
 from typing import Tuple
 
 
