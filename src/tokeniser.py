@@ -1,6 +1,6 @@
 from math import floor
 from typing import Any, Callable, Optional
-from tokens import Token, TokenTypes
+from jtokens import Token, TokenTypes
 
 
 class JSONTokenError(ValueError):

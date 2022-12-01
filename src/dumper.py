@@ -26,11 +26,11 @@ def __dump(json: Union[dict, list], indent=0) -> str:
 
 
 def main():
-    from jparser import parse
-    from tokeniser import tokenise
+    from jparser import __parse
+    from tokeniser import __tokenise
     with open(r".\json\example1.json") as f:
         content = f.read()
-        json = parse(tokenise(content))
+        json = __parse(__tokenise(content))
     
     output: str = __dump(json)
     with open("file_out.json", mode="w") as out_file:

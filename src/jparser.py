@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from typing import Literal
 from tokeniser import __tokenise
-from tokens import Token, TokenTypes
+from jtokens import Token, TokenTypes
 
 """WARNING: Code may not function perfectly.
     This is a module for reading in JSON files.
