@@ -3,7 +3,7 @@ from typing import Literal
 from tokeniser import tokenise
 from tokens import Token, TokenTypes
 
-"""WARNING: Extreme jank ahead.
+"""WARNING: Code may not function perfectly.
     This is a module for reading in JSON files.
     It uses a simple regular grammar checking method
     to first tokenise the JSON text, whereupon a
@@ -12,7 +12,7 @@ from tokens import Token, TokenTypes
     the JSON content.
 """
 
-
+# Custom error types for more helpful error catching.
 class JSONParseError(ValueError):
     pass
 
@@ -42,7 +42,6 @@ def parse_list(tokens: list[Token]):
             t = tokens[i]
             if state is ParserState.EXPECT_VALUE:
                 if is_literal(t):
-                    # print(f"Added value {t.literal}")
                     output.append(t.literal)
                     try:
                         if tokens[i+1].ttype is not TokenTypes.COMMA:
@@ -65,7 +64,6 @@ def parse_list(tokens: list[Token]):
                         i += 1
                     
                     section = parse_list(tokens[start:i-1])
-                    # print(f"Added sublist {section}")
                     output.append(section)
 
                 elif t.ttype is TokenTypes.LEFT_CURLY_BRACKET:
@@ -82,7 +80,6 @@ def parse_list(tokens: list[Token]):
                         i += 1
                     
                     section = parse(tokens[start-1:i])
-                    # print(f"Added subobject {section}")
                     output.append(section)
 
             i += 1
@@ -90,18 +87,12 @@ def parse_list(tokens: list[Token]):
         return output  
 
 def parse(tokens: list[Token]):
-    # if len(tokens) == 0:
-    #     return {}
-    
-    # print(tokens)
     current: int = -1
     output = {}
     state = ParserState.EXPECT_KEY
     
     def at_end():
         return current >= len(tokens)
-
-    # print(current, id(current))
 
     bracket_types = {
         "[]": [TokenTypes.LEFT_SQUARE_BRACKET, TokenTypes.RIGHT_SQUARE_BRACKET],
@@ -131,7 +122,6 @@ def parse(tokens: list[Token]):
         nonlocal current
         current += 1
         if tokens[current].ttype not in expected_types:
-            # print(tokens[current].ttype, expected_types, current, id(current))
             raise JSONExpectationError(f"Expected {expected_types} at {tokens[current-1].start}.")
         return tokens[current]
 
@@ -141,19 +131,15 @@ def parse(tokens: list[Token]):
 
         if state is ParserState.EXPECT_KEY:
             key = expect(TokenTypes.STRING)
-            # print(f"Found key {key}...")
             expect(TokenTypes.COLON) # Expend a colon token if it exists
-            # print("Found colon...")
             try:
                 value = expect(TokenTypes.STRING, TokenTypes.NUMBER, TokenTypes.NULL, TokenTypes.TRUE, TokenTypes.FALSE)
-                # print(f"Found value {value}...")
                 output[key.literal] = value.literal
             except JSONExpectationError as e:
                 t = tokens[current]
                 if t.ttype is TokenTypes.LEFT_CURLY_BRACKET:
                     start = current
                     current = count_brackets("{}") # Find the end of this object
-                    # print("PARSING SUBOBJECT")
                     output[key.literal] = parse(tokens[start:current])
                     current -= 1
                 elif t.ttype is TokenTypes.LEFT_SQUARE_BRACKET:
@@ -161,7 +147,6 @@ def parse(tokens: list[Token]):
                     current = count_brackets("[]")
                     current -= 1
                     output[key.literal] = parse_list(tokens[start+1:current])
-                    # print(f"Skipped square brackets from {start} to {current}")
                 else:
                     raise e
 
@@ -175,10 +160,7 @@ def parse(tokens: list[Token]):
 def main():
     with open("file.json", mode="r", encoding="utf-8") as jsonf:
         tokens = tokenise(jsonf.read())
-        # print(tokens)
         print(parse(tokens))
-        # print(parse_list(tokens[1:-2]))
-
 
 
 if __name__ == "__main__":

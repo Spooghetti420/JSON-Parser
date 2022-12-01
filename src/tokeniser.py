@@ -1,5 +1,5 @@
 from math import floor
-from typing import Any, Callable, Literal, Optional, Union
+from typing import Any, Callable, Optional
 from tokens import Token, TokenTypes
 
 
@@ -36,7 +36,7 @@ def tokenise(json_str: str):
 
         return output
 
-    def consume(end_value: str) -> None:
+    def consume_until(end_value: str) -> None:
         # Continually increments `current` until it is equal to the given "end value".
         nonlocal current
         while json_str[current:current+len(end_value)] != end_value:
@@ -146,11 +146,11 @@ def tokenise(json_str: str):
         elif t == "/":
             if json_str[current] == "/":
                 # We have a comment; these are not permitted in JSON, but I want to include them!
-                consume("\n")
+                consume_until("\n")
                 current += 1
             elif json_str[current] == "*":
                 # Multiline comment, in fact!
-                consume("*/")
+                consume_until("*/")
                 current += 1
         elif is_letter(t):
             current -= 1
