@@ -20,10 +20,18 @@ class TokenTypes(Enum):
 
 @dataclass
 class Token:
-    start: int
+    # start: int
+    line: int
+    col: int
     ttype: TokenTypes
     lexeme: str
     literal: Any
+
+    def is_literal(self):
+        for tt in (TokenTypes.STRING, TokenTypes.NUMBER, TokenTypes.NULL, TokenTypes.TRUE, TokenTypes.FALSE):
+            if self.ttype is tt:
+                return True
+        return False
 
     def __repr__(self) -> str:
         return self.ttype.name + (f" ({self.literal})" if self.literal is not None else "")
