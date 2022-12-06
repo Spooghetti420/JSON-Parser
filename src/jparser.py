@@ -27,13 +27,6 @@ class ParserState(Enum):
     EXPECT_END = auto()
 
 
-def is_literal(token: Token):
-        for tt in (TokenTypes.STRING, TokenTypes.NUMBER, TokenTypes.NULL, TokenTypes.TRUE, TokenTypes.FALSE):
-            if token.ttype is tt:
-                return True
-        return False
-
-
 def parse_list(tokens: list[Token]):
         state = ParserState.EXPECT_VALUE
         output = []
@@ -41,7 +34,7 @@ def parse_list(tokens: list[Token]):
         while i < len(tokens):
             t = tokens[i]
             if state is ParserState.EXPECT_VALUE:
-                if is_literal(t):
+                if t.is_literal():
                     output.append(t.literal)
                     try:
                         if tokens[i+1].ttype is not TokenTypes.COMMA:
@@ -92,7 +85,7 @@ def __parse(tokens: list[Token]):
     state = ParserState.EXPECT_KEY
     
     def at_end():
-        return current >= len(tokens)
+        return tokens[current].ttype is TokenTypes.EOF
 
     bracket_types = {
         "[]": [TokenTypes.LEFT_SQUARE_BRACKET, TokenTypes.RIGHT_SQUARE_BRACKET],
@@ -114,7 +107,7 @@ def __parse(tokens: list[Token]):
             loc_cur += 1
 
         if at_end():
-            raise JSONParseError(f"{'Curly' if bracket_type == '{}' else 'Square'} bracket mismatch in JSON file starting at character {t.start}.")
+            raise JSONParseError(f"{'Curly' if bracket_type == '{}' else 'Square'} bracket mismatch in JSON file starting at {t.line}:{t.col}.")
 
         return loc_cur
 
@@ -122,7 +115,8 @@ def __parse(tokens: list[Token]):
         nonlocal current
         current += 1
         if tokens[current].ttype not in expected_types:
-            raise JSONExpectationError(f"Expected {expected_types} at {tokens[current-1].start}.")
+            t = tokens[current-1]
+            raise JSONExpectationError(f"Expected {expected_types} at {t.line}:{t.col}.")
         return tokens[current]
 
     expect(TokenTypes.LEFT_CURLY_BRACKET)
