@@ -1,6 +1,6 @@
-from jparser import __parse
-from tokeniser import __tokenise
-from dumper import __dump
+from .jparser import __parse
+from .tokeniser import __tokenise
+from .dumper import __dump
 
 """
 This module serves as a frontend for "users" of the API.
