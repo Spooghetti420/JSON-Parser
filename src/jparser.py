@@ -125,6 +125,8 @@ def __parse(tokens: list[Token]):
         t = tokens[current]
 
         if state is ParserState.EXPECT_KEY:
+            if t.ttype is TokenTypes.RIGHT_CURLY_BRACKET:
+                return output
             key = expect(TokenTypes.STRING)
             expect(TokenTypes.COLON) # Expend a colon token if it exists
             try:
